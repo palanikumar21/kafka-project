@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  log-generator:
+    build:
+      context: ./log-generator
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - TOPIC=app-logs
+    restart: on-failure
+
+  log-consumer:
+    build:
+      context: ./log-consumer
+    depends_on:
+      - kafka
+      - prometheus
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - TOPIC=app-logs
+      - PROMETHEUS_PORT=8000
+    ports:
+      - "8000:8000"
+    restart: on-failure
